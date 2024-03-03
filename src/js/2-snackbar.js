@@ -1,44 +1,38 @@
-import iziToast from "izitoast";
-import "izitoast/dist/css/iziToast.min.css";
-
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 const form = document.querySelector('.form');
 
-form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const delayTime = Number(form.delay.value);
-    // console.log  (delayTime)
-    const radioBtn = form.state.value;
+form.addEventListener('submit', event => {
+  const delay = Number(form.delay.value);
 
-    const promise = new Promise((resolve, reject) => {
-        setTimeout(() => {
-           
-            if (radioBtn === 'fulfilled') {
-                resolve('Fulfilled ');
-            } else {
-                reject('Fulfilled ');
-            }
-    }, delayTime)
+  event.preventDefault();
+  const promise = new Promise((resolve, reject) => {
+    if (form.state.value === 'fulfilled') {
+      setTimeout(() => {
+        resolve(delay);
+      }, delay);
+    } else if (form.state.value === 'rejected') {
+      setTimeout(() => {
+        reject(delay);
+      }, delay);
+    }
+  });
+  promise
+    .then(delay => {
+      iziToast.show({
+        title: 'Success',
+        message: `✅ Fulfilled promise in ${delay}ms`,
+        position: 'topCenter',
+        color: 'green',
+      });
     })
-
-    const options = {
-        fontSize: 'large',
-        close: false,
-        position: 'topRight',
-        messageColor: 'white',
-        timeout: 2000,
-                    
-    };
-
-    promise.then(value => {
-        iziToast.success({
-                    ...options,
-                    message: (`✅ Fulfilled promise in ${delayTime}ms`)
-                });
-    })
-        .catch(error => {
-            iziToast.error({
-                    ...options,
-                    message: (`❌ Rejected promise in ${delayTime}ms`)
-                });
-        });
+    .catch(delay => {
+      iziToast.show({
+        title: 'Error',
+        message: `❌ Rejected promise in ${delay}ms`,
+        position: 'topCenter',
+        color: 'red',
+      });
+    });
+  event.currentTarget.reset();
 });
